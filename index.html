@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora — Automation Network</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D1117;
+    --blue: #2563EB;
+    --cyan: #00D4FF;
+    --purple: #7C3AED;
+    --pink: #FF4D9D;
+    --slate: #64748B;
+    --white: #FFFFFF;
+    --grad-blue: linear-gradient(135deg, #2563EB, #7C3AED);
+    --grad-cyan: linear-gradient(135deg, #00D4FF, #2563EB);
+    --grad-purple: linear-gradient(135deg, #7C3AED, #FF4D9D);
+    --grad-hero: linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #FF4D9D 100%);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ─── ORBS ─── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.15;
+  }
+  .orb-1 { width: 600px; height: 600px; background: #2563EB; top: -200px; left: -200px; }
+  .orb-2 { width: 500px; height: 500px; background: #7C3AED; top: 20%; right: -150px; }
+  .orb-3 { width: 400px; height: 400px; background: #FF4D9D; bottom: 10%; left: 10%; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 6%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(13, 17, 23, 0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .nav-logo-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--grad-blue);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: white;
+    letter-spacing: -0.5px;
+  }
+
+  .nav-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .nav-logo-text .brand { font-size: 15px; font-weight: 700; color: white; letter-spacing: 0.5px; }
+  .nav-logo-text .sub { font-size: 9px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--cyan); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: white; }
+
+  .nav-cta {
+    background: var(--grad-blue);
+    color: white !important;
+    padding: 9px 22px;
+    border-radius: 8px;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: opacity 0.2s !important;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 6% 80px;
+  }
+
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(37, 99, 235, 0.4);
+    background: rgba(37, 99, 235, 0.1);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 24px;
+  }
+
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-size: clamp(38px, 4vw, 58px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 .gradient-text {
+    background: var(--grad-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 17px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.75;
+    margin-bottom: 40px;
+    max-width: 480px;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--grad-blue);
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(37, 99, 235, 0.5);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .btn-arrow { font-size: 18px; transition: transform 0.2s; }
+  .btn-primary:hover .btn-arrow { transform: translateX(4px); }
+
+  /* ─── HERO VISUAL ─── */
+  .hero-visual {
+    position: relative;
+  }
+
+  .hero-card-main {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-card-main::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--grad-hero);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-icon {
+    width: 40px; height: 40px;
+    background: var(--grad-blue);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .card-label { font-size: 14px; font-weight: 600; }
+  .card-sublabel { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  .status-chip {
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cyan);
+  }
+
+  .workflow-nodes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .wf-node {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .wf-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .wf-dot.blue { background: #2563EB; box-shadow: 0 0 8px #2563EB; }
+  .wf-dot.purple { background: #7C3AED; box-shadow: 0 0 8px #7C3AED; }
+  .wf-dot.cyan { background: #00D4FF; box-shadow: 0 0 8px #00D4FF; }
+  .wf-dot.pink { background: #FF4D9D; box-shadow: 0 0 8px #FF4D9D; }
+
+  .wf-label { font-size: 12px; font-weight: 500; flex: 1; }
+  .wf-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  .wf-tag.active { background: rgba(0,212,255,0.12); color: var(--cyan); }
+  .wf-tag.done { background: rgba(37,99,235,0.12); color: #60A5FA; }
+  .wf-tag.queue { background: rgba(124,58,237,0.12); color: #A78BFA; }
+  .wf-tag.error { background: rgba(255,77,157,0.12); color: #FF4D9D; }
+
+  .card-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .cstat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .cstat-num { font-size: 22px; font-weight: 700; }
+  .cstat-num.blue { color: #60A5FA; }
+  .cstat-num.purple { color: #A78BFA; }
+  .cstat-num.cyan { color: var(--cyan); }
+  .cstat-label { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; font-weight: 500; }
+
+  /* Floating badges */
+  .float-badge {
+    position: absolute;
+    background: rgba(13,17,23,0.85);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+    backdrop-filter: blur(10px);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .float-badge-1 {
+    top: -20px; right: -20px;
+    animation: float1 4s ease-in-out infinite;
+  }
+
+  .float-badge-2 {
+    bottom: -20px; left: -20px;
+    animation: float2 5s ease-in-out infinite;
+  }
+
+  @keyframes float1 {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(10px); }
+  }
+
+  .badge-icon { font-size: 16px; }
+
+  /* ─── STATS STRIP ─── */
+  .stats-strip {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    padding: 40px 6%;
+  }
+
+  .stats-strip-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    text-align: center;
+  }
+
+  .stat-item {}
+  .stat-num {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    background: var(--grad-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 6px; font-weight: 500; letter-spacing: 0.3px; }
+
+  /* ─── SECTIONS COMMON ─── */
+  section { position: relative; z-index: 1; padding: 100px 6%; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    font-size: 16px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.75;
+    max-width: 580px;
+  }
+
+  .section-head { margin-bottom: 60px; }
+
+  /* ─── FEATURES ─── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 28px;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(37,99,235,0.3);
+    transform: translateY(-4px);
+  }
+
+  .feature-icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .feature-icon-wrap.blue { background: rgba(37,99,235,0.15); }
+  .feature-icon-wrap.cyan { background: rgba(0,212,255,0.12); }
+  .feature-icon-wrap.purple { background: rgba(124,58,237,0.15); }
+  .feature-icon-wrap.pink { background: rgba(255,77,157,0.12); }
+  .feature-icon-wrap.teal { background: rgba(0,200,180,0.12); }
+  .feature-icon-wrap.amber { background: rgba(250,180,50,0.12); }
+
+  .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .feature-card p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+  /* ─── HOW IT WORKS ─── */
+  .how-it-works { background: rgba(255,255,255,0.015); }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+
+  .steps-grid::before {
+    content: '';
+    position: absolute;
+    top: 36px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(37,99,235,0.4), rgba(124,58,237,0.4), rgba(255,77,157,0.4), transparent);
+  }
+
+  .step-item {
+    padding: 0 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .step-num {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.1);
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 auto 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-num.s1 { border-color: #2563EB; color: #60A5FA; background: rgba(37,99,235,0.1); }
+  .step-num.s2 { border-color: #7C3AED; color: #A78BFA; background: rgba(124,58,237,0.1); }
+  .step-num.s3 { border-color: #00D4FF; color: #00D4FF; background: rgba(0,212,255,0.08); }
+  .step-num.s4 { border-color: #FF4D9D; color: #FF4D9D; background: rgba(255,77,157,0.08); }
+
+  .step-item h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .step-item p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.7; }
+
+  /* ─── USE CASES ─── */
+  .use-cases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .uc-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 28px 32px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: border-color 0.3s, background 0.3s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .uc-card:hover {
+    border-color: rgba(37,99,235,0.3);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .uc-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .uc-icon.blue { background: rgba(37,99,235,0.15); }
+  .uc-icon.purple { background: rgba(124,58,237,0.15); }
+  .uc-icon.cyan { background: rgba(0,212,255,0.12); }
+  .uc-icon.pink { background: rgba(255,77,157,0.12); }
+
+  .uc-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .uc-card p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.65; }
+
+  .uc-link { font-size: 13px; font-weight: 600; color: var(--cyan); margin-top: 12px; display: flex; align-items: center; gap: 4px; }
+
+  /* ─── COMMUNITY ─── */
+  .community-section {}
+
+  .community-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .community-left .section-desc { margin-bottom: 36px; }
+
+  .community-perks {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .perk-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .perk-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .community-right {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .testimonial-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+
+  .t-text { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+
+  .t-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .t-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .t-name { font-size: 13px; font-weight: 600; }
+  .t-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ─── PRICING ─── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .price-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 32px 28px;
+    position: relative;
+  }
+
+  .price-card.featured {
+    background: rgba(37,99,235,0.08);
+    border-color: rgba(37,99,235,0.35);
+  }
+
+  .price-card.featured::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--grad-blue);
+    border-radius: 18px 18px 0 0;
+  }
+
+  .price-popular {
+    position: absolute;
+    top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--grad-blue);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .price-tier { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+  .price-tier.blue { color: var(--cyan); }
+  .price-tier.purple { color: #A78BFA; }
+
+  .price-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .price-currency { font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.6); }
+  .price-num { font-size: 52px; font-weight: 800; letter-spacing: -2px; }
+  .price-per { font-size: 14px; color: rgba(255,255,255,0.4); margin-left: 4px; }
+
+  .price-tagline { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 28px; line-height: 1.5; }
+
+  .price-features {
+    list-style: none;
+    margin-bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .price-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.5;
+  }
+
+  .pf-check {
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    background: rgba(37,99,235,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 9px;
+    color: #60A5FA;
+    font-weight: 700;
+  }
+
+  .pf-check.purple { background: rgba(124,58,237,0.2); color: #A78BFA; }
+  .pf-check.pink { background: rgba(255,77,157,0.15); color: #FF4D9D; }
+
+  .btn-plan {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s;
+  }
+
+  .btn-plan.outline {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+  }
+  .btn-plan.outline:hover { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.04); }
+
+  .btn-plan.solid {
+    background: var(--grad-blue);
+    border: none;
+    color: white;
+    box-shadow: 0 0 24px rgba(37,99,235,0.3);
+  }
+  .btn-plan.solid:hover { box-shadow: 0 4px 32px rgba(37,99,235,0.5); }
+
+  .btn-plan.gradient-purple {
+    background: var(--grad-purple);
+    border: none;
+    color: white;
+  }
+
+  /* ─── CTA ─── */
+  .cta-section {
+    padding: 80px 6%;
+    text-align: center;
+  }
+
+  .cta-box {
+    max-width: 720px;
+    margin: 0 auto;
+    background: rgba(37,99,235,0.06);
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 24px;
+    padding: 64px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--grad-hero);
+  }
+
+  .cta-box .section-eyebrow { margin-bottom: 16px; }
+  .cta-box h2 { font-size: clamp(28px, 3vw, 42px); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; }
+  .cta-box p { font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 36px; }
+
+  .cta-btns { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 60px 6% 40px;
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 56px;
+  }
+
+  .footer-brand p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.7;
+    margin: 16px 0 24px;
+    max-width: 280px;
+  }
+
+  .footer-socials { display: flex; gap: 10px; }
+  .social-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    text-decoration: none;
+    color: rgba(255,255,255,0.5);
+    transition: background 0.2s, color 0.2s;
+  }
+  .social-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+  .footer-col h4 { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+  .footer-col ul a {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col ul a:hover { color: white; }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .footer-bottom a { color: var(--cyan); text-decoration: none; }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero-inner, .community-inner { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .use-cases-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+    .stats-strip-inner { grid-template-columns: 1fr 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    nav .nav-links { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .steps-grid::before { display: none; }
+    .footer-top { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="data:image/png;base64,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" alt="Nexora logo" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#0D1117;padding:2px;" />
+    <div class="nav-logo-text">
+      <span class="brand">Nexora</span>
+      <span class="sub">Automate Today. Elevate Tomorrow.</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#community">Community</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#join" class="nav-cta">Join Free →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Now Open — Join 12,000+ Members
+      </div>
+      <h1>
+        Empowering the future through intelligent
+        <span class="gradient-text"> automation.</span>
+      </h1>
+      <p>
+        The premier community for AI automation practitioners. Learn, build, and connect with forward-thinking professionals shaping the future of work.
+      </p>
+      <div class="hero-btns">
+        <a href="#join" class="btn-primary">
+          Join the Society <span class="btn-arrow">→</span>
+        </a>
+        <a href="#how" class="btn-secondary">
+          See How It Works
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="float-badge float-badge-1">
+        <span class="badge-icon">⚡</span>
+        <span style="color:rgba(255,255,255,0.9)">3.2M tasks automated this week</span>
+      </div>
+      <div class="hero-card-main">
+        <div class="card-header">
+          <div class="card-title-row">
+            <div class="card-icon">🤖</div>
+            <div>
+              <div class="card-label">Automation Hub</div>
+              <div class="card-sublabel">Live Dashboard · 238 active workflows</div>
+            </div>
+          </div>
+          <div class="status-chip">● Live</div>
+        </div>
+        <div class="workflow-nodes">
+          <div class="wf-node">
+            <div class="wf-dot blue"></div>
+            <span class="wf-label">Lead Enrichment Pipeline</span>
+            <span class="wf-tag active">Running</span>
+          </div>
+          <div class="wf-node">
+            <div class="wf-dot purple"></div>
+            <span class="wf-label">AI Email Classifier</span>
+            <span class="wf-tag done">Completed</span>
+          </div>
+          <div class="wf-node">
+            <div class="wf-dot cyan"></div>
+            <span class="wf-label">Slack → Notion Sync</span>
+            <span class="wf-tag queue">Queued</span>
+          </div>
+          <div class="wf-node">
+            <div class="wf-dot pink"></div>
+            <span class="wf-label">Invoice Auto-Processor</span>
+            <span class="wf-tag error">Review</span>
+          </div>
+        </div>
+        <div class="card-stats">
+          <div class="cstat">
+            <div class="cstat-num blue">98.7%</div>
+            <div class="cstat-label">Uptime</div>
+          </div>
+          <div class="cstat">
+            <div class="cstat-num purple">4.2s</div>
+            <div class="cstat-label">Avg. Run</div>
+          </div>
+          <div class="cstat">
+            <div class="cstat-num cyan">1.2k</div>
+            <div class="cstat-label">Today's Runs</div>
+          </div>
+        </div>
+      </div>
+      <div class="float-badge float-badge-2">
+        <span class="badge-icon">🏆</span>
+        <span style="color:rgba(255,255,255,0.9)">#1 Automation Community 2025</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stats-strip-inner">
+    <div class="stat-item reveal">
+      <div class="stat-num">12K+</div>
+      <div class="stat-label">Community Members</div>
+    </div>
+    <div class="stat-item reveal">
+      <div class="stat-num">340+</div>
+      <div class="stat-label">Automation Templates</div>
+    </div>
+    <div class="stat-item reveal">
+      <div class="stat-num">48M+</div>
+      <div class="stat-label">Tasks Automated</div>
+    </div>
+    <div class="stat-item reveal">
+      <div class="stat-num">98%</div>
+      <div class="stat-label">Member Satisfaction</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">What We Offer</div>
+      <h2 class="section-title">Everything you need to<br>master AI automation</h2>
+      <p class="section-desc">From hands-on workshops to enterprise-grade templates — we give you the tools, knowledge, and network to automate smarter.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap blue">🧠</div>
+        <h3>AI-Powered Learning Paths</h3>
+        <p>Structured curricula covering n8n, Make, Zapier, LangChain, and more — from beginner to advanced practitioner level.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap cyan">⚙️</div>
+        <h3>340+ Ready Templates</h3>
+        <p>Battle-tested workflow templates for sales, marketing, ops, and finance. Clone and deploy in minutes, not weeks.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap purple">👥</div>
+        <h3>Expert Community</h3>
+        <p>Connect with 12,000+ practitioners, builders, and AI enthusiasts. Get answers, share wins, find collaborators.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap pink">🎯</div>
+        <h3>Weekly Live Sessions</h3>
+        <p>Hands-on workshops, live builds, and Q&A sessions with industry experts every week. All recorded and searchable.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap teal">🔌</div>
+        <h3>Integration Library</h3>
+        <p>Deep-dive guides for 200+ tools and APIs. Connect anything to everything with confidence and best practices.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap amber">📊</div>
+        <h3>Analytics & ROI Tracking</h3>
+        <p>Measure the impact of your automations. Track time saved, costs reduced, and efficiency gains across your stack.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="how">
+  <div class="section-inner">
+    <div class="section-head reveal" style="text-align:center; max-width:600px; margin:0 auto 60px;">
+      <div class="section-eyebrow">The Process</div>
+      <h2 class="section-title">Go from zero to automated in four steps</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item reveal">
+        <div class="step-num s1">01</div>
+        <h3>Join & Onboard</h3>
+        <p>Create your free account and complete a short onboarding to personalise your learning path based on your goals and experience.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num s2">02</div>
+        <h3>Learn the Foundations</h3>
+        <p>Follow curated courses on automation tools, prompt engineering, and AI integration patterns used by top practitioners.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num s3">03</div>
+        <h3>Build with Templates</h3>
+        <p>Clone community templates, customise them for your use case, and deploy live automations with guided step-by-step support.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num s4">04</div>
+        <h3>Scale & Share</h3>
+        <p>Publish your own templates, earn reputation points, grow your network, and become a recognised automation expert.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section id="use-cases">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Use Cases</div>
+      <h2 class="section-title">Automation for every function</h2>
+      <p class="section-desc">Whether you're in sales, ops, marketing or engineering — our community has proven automation playbooks for your needs.</p>
+    </div>
+    <div class="use-cases-grid">
+      <a class="uc-card reveal" href="#">
+        <div class="uc-icon blue">📈</div>
+        <div>
+          <h3>Sales & CRM Automation</h3>
+          <p>Automate lead scoring, enrichment, follow-up sequences, and CRM updates. Close more deals with less manual work.</p>
+          <div class="uc-link">Explore playbooks →</div>
+        </div>
+      </a>
+      <a class="uc-card reveal" href="#">
+        <div class="uc-icon purple">🎯</div>
+        <div>
+          <h3>Marketing Operations</h3>
+          <p>AI content pipelines, social scheduling, campaign analytics, and audience segmentation — all on autopilot.</p>
+          <div class="uc-link">Explore playbooks →</div>
+        </div>
+      </a>
+      <a class="uc-card reveal" href="#">
+        <div class="uc-icon cyan">🔧</div>
+        <div>
+          <h3>Business Process Automation</h3>
+          <p>Streamline invoicing, HR onboarding, reporting, approvals, and internal operations from end to end.</p>
+          <div class="uc-link">Explore playbooks →</div>
+        </div>
+      </a>
+      <a class="uc-card reveal" href="#">
+        <div class="uc-icon pink">🤖</div>
+        <div>
+          <h3>AI Agent Development</h3>
+          <p>Build autonomous agents that research, decide, and act. From simple bots to complex multi-step AI pipelines.</p>
+          <div class="uc-link">Explore playbooks →</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="community-section" id="community">
+  <div class="section-inner">
+    <div class="community-inner">
+      <div class="community-left reveal">
+        <div class="section-eyebrow">Community</div>
+        <h2 class="section-title">Learn alongside the best in the business</h2>
+        <p class="section-desc">Our members range from solo freelancers to ops leads at Fortune 500 companies — all united by a passion for intelligent automation.</p>
+        <div class="community-perks">
+          <div class="perk-row">
+            <div class="perk-icon" style="background:rgba(37,99,235,0.15)">💬</div>
+            <span>Private Slack workspace with 50+ topic channels</span>
+          </div>
+          <div class="perk-row">
+            <div class="perk-icon" style="background:rgba(0,212,255,0.12)">🎓</div>
+            <span>Monthly masterclasses from industry leaders</span>
+          </div>
+          <div class="perk-row">
+            <div class="perk-icon" style="background:rgba(124,58,237,0.15)">🏆</div>
+            <span>Automation challenges with prizes and recognition</span>
+          </div>
+          <div class="perk-row">
+            <div class="perk-icon" style="background:rgba(255,77,157,0.12)">🤝</div>
+            <span>Peer matching for collaboration and accountability</span>
+          </div>
+        </div>
+      </div>
+      <div class="community-right reveal">
+        <div class="testimonial-card">
+          <p class="t-text">"Joined six months ago and have already automated 80% of my agency's client onboarding. The templates alone saved me weeks of work. The community support is unreal."</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:rgba(37,99,235,0.2); color:#60A5FA;">SR</div>
+            <div>
+              <div class="t-name">Sarah Rahman</div>
+              <div class="t-role">Agency Founder · Dubai</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="t-text">"The live sessions are incredible. Every week I walk away with something immediately usable. My team's productivity has never been higher since we adopted the workflows from here."</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:rgba(124,58,237,0.2); color:#A78BFA;">MK</div>
+            <div>
+              <div class="t-name">Marcus Klein</div>
+              <div class="t-role">Head of Revenue Ops · Berlin</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="t-text">"I went from knowing nothing about n8n to deploying 12 live automations in my first month. The learning path is brilliantly structured and the community is always there to help."</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:rgba(0,212,255,0.12); color:#00D4FF;">PL</div>
+            <div>
+              <div class="t-name">Priya Lal</div>
+              <div class="t-role">Ops Manager · Bangalore</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="background: rgba(255,255,255,0.015);">
+  <div class="section-inner">
+    <div class="section-head reveal" style="text-align:center; max-width:540px; margin:0 auto 60px;">
+      <div class="section-eyebrow">Pricing</div>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-desc" style="margin:0 auto;">Start free forever. Upgrade when you're ready to unlock the full power of the society.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card reveal">
+        <div class="price-tier">Free</div>
+        <div class="price-amount">
+          <span class="price-currency">$</span>
+          <span class="price-num">0</span>
+          <span class="price-per">/ month</span>
+        </div>
+        <p class="price-tagline">Perfect to get started and explore the community.</p>
+        <ul class="price-features">
+          <li><div class="pf-check">✓</div> Community forum access</li>
+          <li><div class="pf-check">✓</div> 20 starter templates</li>
+          <li><div class="pf-check">✓</div> Weekly newsletter</li>
+          <li><div class="pf-check">✓</div> Basic learning resources</li>
+        </ul>
+        <a href="#" class="btn-plan outline">Get Started Free</a>
+      </div>
+
+      <div class="price-card featured reveal">
+        <div class="price-popular">Most Popular</div>
+        <div class="price-tier blue">Pro</div>
+        <div class="price-amount">
+          <span class="price-currency">$</span>
+          <span class="price-num">29</span>
+          <span class="price-per">/ month</span>
+        </div>
+        <p class="price-tagline">For serious automation practitioners ready to level up.</p>
+        <ul class="price-features">
+          <li><div class="pf-check">✓</div> Everything in Free</li>
+          <li><div class="pf-check">✓</div> Full template library (340+)</li>
+          <li><div class="pf-check">✓</div> Private Slack workspace</li>
+          <li><div class="pf-check">✓</div> Weekly live sessions & recordings</li>
+          <li><div class="pf-check">✓</div> Priority community support</li>
+          <li><div class="pf-check">✓</div> Automation audit workshops</li>
+        </ul>
+        <a href="#" class="btn-plan solid">Join Pro</a>
+      </div>
+
+      <div class="price-card reveal">
+        <div class="price-tier purple">Enterprise</div>
+        <div class="price-amount">
+          <span class="price-currency"></span>
+          <span class="price-num" style="font-size:38px; color:#A78BFA;">Custom</span>
+        </div>
+        <p class="price-tagline">For teams and organisations scaling automation at depth.</p>
+        <ul class="price-features">
+          <li><div class="pf-check purple">✓</div> Everything in Pro</li>
+          <li><div class="pf-check purple">✓</div> Dedicated success manager</li>
+          <li><div class="pf-check purple">✓</div> Private team workspace</li>
+          <li><div class="pf-check purple">✓</div> Custom training programmes</li>
+          <li><div class="pf-check purple">✓</div> SLA & compliance support</li>
+          <li><div class="pf-check purple">✓</div> White-glove onboarding</li>
+        </ul>
+        <a href="#" class="btn-plan gradient-purple">Talk to Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="join">
+  <div class="cta-box reveal">
+    <div class="section-eyebrow">Ready to Begin?</div>
+    <h2>Join 12,000+ automation builders today.</h2>
+    <p>The Nexora is where curious minds become automation experts. It's free to start — your first workflow awaits.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-primary" style="font-size:16px; padding:16px 32px;">
+        Join for Free <span class="btn-arrow">→</span>
+      </a>
+      <a href="#" class="btn-secondary" style="font-size:16px; padding:16px 32px;">
+        Book a Demo
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="display:inline-flex">
+          <img src="data:image/png;base64,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" alt="Nexora logo" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#0D1117;padding:2px;" />
+          <div class="nav-logo-text">
+            <span class="brand">Nexora</span>
+            <span class="sub">Automate Today. Elevate Tomorrow.</span>
+          </div>
+        </a>
+        <p>Empowering the next generation of AI automation practitioners through community, education, and world-class resources.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn">𝕏</a>
+          <a href="#" class="social-btn">in</a>
+          <a href="#" class="social-btn">▶</a>
+          <a href="#" class="social-btn">💬</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Templates</a></li>
+          <li><a href="#">Courses</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="#">Join Slack</a></li>
+          <li><a href="#">Live Sessions</a></li>
+          <li><a href="#">Challenges</a></li>
+          <li><a href="#">Leaderboard</a></li>
+          <li><a href="#">Showcase</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Nexora Automation Network. All rights reserved.</span>
+      <span>Built with ❤️ by the <a href="#">Nexora Automation Network</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(13, 17, 23, 0.92)';
+    } else {
+      nav.style.background = 'rgba(13, 17, 23, 0.7)';
+    }
+  });
+</script>
+</body>
+</html>
